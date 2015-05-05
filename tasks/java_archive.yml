@@ -1,0 +1,20 @@
+--- 
+#Java Installation by TAR.GZ
+ 
+- name: Download Java - Archive
+  shell: 'wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie"
+    "http://download.oracle.com/otn-pub/java/jdk/{{ java_version }}-{{ java_build }}/{{ jdk_or_jre }}-{{ java_version }}-linux-x{{ ansible_userspace_bits }}.{{ java_ext }}"
+    -O /tmp/{{ jdk_or_jre }}_{{ java_version }}.{{ java_ext }}'
+  register: jdk_downloaded
+  tags:
+    - java_tar
+
+- name: Extract Java - Archive
+  shell: tar xzf /tmp/{{ jdk_or_jre }}_{{ java_version }}.{{ java_ext }}
+    chdir=/opt
+  when: jdk_downloaded|changed and java_ext == "tar.gz"
+  tags:
+    - java_tar
+    
+- include: java_commons.yml
+  when: jdk_downloaded|changed == True

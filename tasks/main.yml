@@ -1,0 +1,19 @@
+---
+# Select JAVA installation way
+# java_from possiblities: local, archive, rpm, apt
+
+- name: Install JAVA from LOCAL archive
+  include: '../tasks/java_local.yml'
+  when: java_from == 'local'
+
+- name: Install JAVA from TAR.GZ
+  include: '../tasks/java_archive.yml'
+  when: java_from == 'archive'
+ 
+- name: Install JAVA from RPM
+  include: '../tasks/java_rpm.yml'
+  when: java_from == 'rpm' and ansible_distribution == 'RedHat'
+  
+- name: Install JAVA from APT
+  include: '../tasks/java_apt.yml'
+  when: java_from == 'apt' and ansible_distribution == 'Ubuntu'

@@ -1,0 +1,9 @@
+---
+- hosts: test
+  remote_user: root
+  
+  vars: 
+    java_from: apt
+
+  roles:
+    - ansible-role-java

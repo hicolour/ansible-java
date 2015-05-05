@@ -1,0 +1,23 @@
+--- 
+# Java Installation by RPM
+
+- name: Download Java - RPM
+  command: curl -L  -H 'Cookie:oraclelicense=accept-securebackup-cookie'  -o jdk-{{ java_version }}-linux-x{{ ansible_userspace_bits }}.rpm  http://download.oracle.com/otn-pub/java/jdk/{{ java_version }}-{{ java_build }}/jdk-{{ java_version }}-linux-x{{ ansible_userspace_bits }}.rpm
+  args:
+    chdir:   /tmp
+  register: jdk_downloaded
+  tags:
+    - java_rpm
+
+# RedHat RPM installation
+- name: Install Java - RPM
+  sudo: True
+  command: rpm --prefix=/opt --force -Uvh jdk-{{ java_version }}-linux-x{{ ansible_userspace_bits }}.rpm
+  args:
+    chdir: /tmp
+  when: jdk_downloaded|changed and ansible_distribution =='RedHat'
+  tags:
+    - java_rpm
+    
+- include: java_commons.yml
+  when: jdk_downloaded|changed and ansible_distribution =='RedHat'

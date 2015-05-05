@@ -1,0 +1,19 @@
+# Generals
+java_from: archive #local, archive, rpm, apt
+
+# Make sure your versions are compatible http://tomcat.apache.org/whichversion.html
+tomcat_version: '7.0.61' #7.0.61 latest 7.X release, 6.0.43 latest 6.x release
+
+# Java versions
+java_version: '8u45' #7u79 latest for 7.X, 6u45 latest for 6.X
+java_build: 'b14' #b14 Java8  b15 latest for 7.X, b06 latest for 6.X
+#java_version: '7u79' #7u79 latest for 7.X, 6u45 latest for 6.X
+#java_build: 'b15' #b14 Java8  b15 latest for 7.X, b06 latest for 6.X
+
+# Other Java stuff
+jdk_or_jre: jdk
+java_ext: tar.gz #tar.gz for 7+, bin for <= 6. This is dumb
+
+# Environment variables
+java_home: /opt/{{ jdk_or_jre }}1.{{ java_version|replace('u','.0_') }} # Use when installing jdk
+jre_home: /opt/{{ jdk_or_jre }}1.{{ java_version|replace('u','.0_') }}/jre # Use when installing jre onl

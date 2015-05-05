@@ -1,0 +1,24 @@
+---
+# Java installataion from local
+
+- name: Copy Java local archive to /tmp - Local
+  copy: 
+    src=../files/{{ jdk_or_jre }}_{{ java_version }}.{{ java_ext}} 
+    dest=/tmp/{{ jdk_or_jre }}_{{ java_version }}.{{ java_ext}}
+    owner=root
+    group=root
+    mode=0755
+  ignore_errors: true
+  register: jdk_downloaded
+  tags:
+    - java_local
+
+- name: Extract Java - Archive
+  shell: tar xzf /tmp/{{ jdk_or_jre }}_{{ java_version }}.{{ java_ext }}
+    chdir=/opt
+  when: jdk_downloaded|changed and java_ext == "tar.gz"
+  tags:
+    - java_local
+    
+- include: java_commons.yml
+  when: jdk_downloaded|changed == True

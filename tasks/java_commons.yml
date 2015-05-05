@@ -1,0 +1,64 @@
+--- 
+# Java commons
+- name: Ensure directories are 0755
+  sudo: True
+  shell: find /opt/jdk1* -type d -exec chmod 0755 {} \;
+  when: jdk_downloaded|changed == True or jdk_downloaded|success == True
+  tags:
+    - java_common
+
+- name: Create java symlink
+  file: path=/opt/java state=link src={{ java_home }}
+  when: jdk_downloaded|changed == True or jdk_downloaded|success == True
+  tags:
+    - java_common
+  
+- name: Add temporary JAVA_HOME environment variable 
+  shell: export JAVA_HOME={{ java_home }}
+  when: jdk_downloaded|changed == True or jdk_downloaded|success == True
+  tags:
+    - java_common
+    
+- name: Add permanent Java environment variables 
+  lineinfile: 
+    dest=/etc/bashrc
+    insertafter=EOF
+    line="export JAVA_HOME={{ java_home }}"
+  when: (jdk_downloaded|changed == True or jdk_downloaded|success == True) and ansible_distribution =='RedHat'
+  tags:
+    - java_common
+    
+- name: Add permanent PATH environment variables 
+  lineinfile: 
+    dest=/etc/bashrc
+    insertafter=EOF
+    line="export PATH=$PATH:$JAVA_HOME/bin"
+  when: (jdk_downloaded|changed == True or jdk_downloaded|success == True) and ansible_distribution =='RedHat'
+  tags:
+    - java_common
+    
+
+- name: Add permanent Java environment variable 
+  lineinfile: 
+    dest=/etc/profile
+    insertafter=EOF
+    line="export JAVA_HOME={{ java_home }}"
+  when: (jdk_downloaded|changed == True or jdk_downloaded|success == True) and ansible_distribution =='Ubuntu'
+  tags:
+    - java_common
+    
+- name: Add permanent PATH environment variable 
+  lineinfile: 
+    dest=/etc/profile
+    insertafter=EOF
+    line="export PATH=$PATH:$JAVA_HOME/bin"
+  when: (jdk_downloaded|changed == True or jdk_downloaded|success == True) and ansible_distribution =='Ubuntu'
+  tags:
+    - java_common
+    
+- name: Delete temporary Java files
+  file: path=/tmp/{{ jdk_or_jre }}_{{ java_version }}.{{ java_ext }} state=absent
+  ignore_errors: yes
+  when: jdk_downloaded|changed == True or jdk_downloaded|success == True and java_from == 'archive'
+  tags:
+    - java_common

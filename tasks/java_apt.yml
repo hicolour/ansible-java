@@ -1,0 +1,26 @@
+---
+# Java Installation by APT
+
+- name: Import WebUpd8 PGP key - APT
+  sudo: true
+  apt_key: keyserver=keyserver.ubuntu.com id=0xEEA14886 state=present
+  
+- name: Add the WebUpd8 Oracle Java PPA repository - APT
+  sudo: true
+  apt_repository: repo=ppa:webupd8team/java state=present
+  
+- name: Automatically accept the Oracle license - APT
+  sudo: true
+  debconf: name="oracle-java{{ java_version|first }}-installer" question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
+  
+- name: Install Java - APT
+  sudo: true
+  apt: pkg=oracle-java{{ java_version|first }}-installer state=present force=yes
+  register: jdk_downloaded
+  tags:
+   - java_apt
+   
+- name: Set Java environment variables - APT
+  sudo: true
+  apt: pkg=oracle-java{{ java_version|first }}-set-default state=present force=yes
+  when: jdk_downloaded|changed == True
